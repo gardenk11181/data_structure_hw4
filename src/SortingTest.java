@@ -1,3 +1,4 @@
+import javax.sound.sampled.EnumControl;
 import java.io.*;
 import java.util.*;
 
@@ -221,19 +222,89 @@ public class SortingTest
 		// 최대 자리수를 찾는 과정 빅세타(n)
 
 		for(int i=0; i<d; i++) {
-			Queue<Integer>[] queueArray = new Queue[19];
+			MyQueue[] myQueues = new MyQueue[19];
+			for(int m=0; m<myQueues.length; m++) {
+				myQueues[m] = new MyQueue();
+			}
 			for(int j=0; j<value.length; j++) {
-				int number = (value[j]/((int)Math.pow(10,d-1-i)))%10 + 9;
-				queueArray[number].add(value[i]);
+				int number = (value[j]/((int)Math.pow(10,i)))%10 + 9;
+				myQueues[number].add(value[j]);
 			}
 			int count=0;
-			for(int k=0; k<queueArray.length; k++) {
-				while(queueArray[k].peek()!=null) {
-					value[count++] = queueArray[k].poll();
+			for(int k=0; k<myQueues.length; k++) {
+				while(!myQueues[k].isEmpty()) {
+					value[count++] = myQueues[k].poll();
 				}
 			}
 		}
 
 		return (value);
+	}
+}
+
+interface MyQueueInterface {
+	public int size();
+	public boolean isEmpty();
+	public int poll();
+	public int peek();
+	public void add(int num);
+}
+
+class MyNode {
+	private int value;
+	private MyNode nextNode;
+	MyNode(int value){
+		this.value = value;
+	}
+	public void setNext(MyNode nextNode) {
+		this.nextNode = nextNode;
+	}
+	public MyNode getNext() {
+		return nextNode;
+	}
+	public int getValue() {
+		return value;
+	}
+
+}
+
+class MyQueue implements MyQueueInterface {
+	MyNode head = new MyNode(0);
+	@Override
+	public int size() {
+		MyNode first = head;
+		int count=0;
+		while(first.getNext()!=null) {
+			first = first.getNext();
+			count++;
+		}
+		return count;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		if(size()==0) return true;
+		else return false;
+	}
+
+	@Override
+	public int poll() {
+		int tmp = head.getNext().getValue();
+		head.setNext(head.getNext().getNext());
+		return tmp;
+	}
+
+	@Override
+	public int peek() {
+		return head.getNext().getValue();
+	}
+
+	@Override
+	public void add(int num) {
+		MyNode lastNode = head;
+		for(int i=0; i<size(); i++) {
+			lastNode = lastNode.getNext();
+		}
+		lastNode.setNext(new MyNode(num));
 	}
 }
