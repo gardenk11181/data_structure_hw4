@@ -147,33 +147,93 @@ public class SortingTest
 	private static int[] DoMergeSort(int[] value)
 	{
 		// TODO : Merge Sort 를 구현하라.
+		int[] tempArray = new int[value.length];
 
 		if(value.length>1) {
 			int[] firstArray = new int[value.length/2];
 			int[] secondArray = new int[value.length - value.length/2];
-			System.arraycopy(firstArray,0,value,0,value.length/2);
-			System.arraycopy(secondArray,0,value,value.length/2+1,value.length);
+			System.arraycopy(value,0,firstArray,0,value.length/2);
+			System.arraycopy(value,value.length/2,secondArray,0,value.length - value.length/2);
 
 			firstArray = DoMergeSort(firstArray);
 			secondArray = DoMergeSort(secondArray);
 
+			int i=0, j=0,k=0;
+			while(true) {
+				if(i==firstArray.length) {
+					if(j==secondArray.length) break;
+					tempArray[k++] = secondArray[j++];
+				} else if(j==secondArray.length) {
+					tempArray[k++] = firstArray[i++];
+				} else if(firstArray[i]<secondArray[j]) {
+					tempArray[k++] = firstArray[i++];
+				} else tempArray[k++] = secondArray[j++];
+			}
 
+
+		} else {
+			tempArray[0] = value[0];
 		}
 
-		return (value);
+		return tempArray;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int[] DoQuickSort(int[] value)
 	{
 		// TODO : Quick Sort 를 구현하라.
-		return (value);
+		if(value.length>1) {
+			int pivot = value[value.length-1];
+			int pivotIndex = 0;
+			//partition process
+			for(int i=0; i<value.length-1; i++) {
+				if(value[i]<pivot) {
+					int tmp = value[pivotIndex];
+					value[pivotIndex] = value[i];
+					value[i] = tmp;
+					pivotIndex++;
+				}
+			}
+			int[] smallerArray = new int[pivotIndex];
+			int[] biggerArray = new int[value.length-pivotIndex-1];
+			System.arraycopy(value,0,smallerArray,0,pivotIndex);
+			System.arraycopy(value,pivotIndex,biggerArray,0,value.length-pivotIndex-1);
+			smallerArray = DoQuickSort(smallerArray);
+			biggerArray = DoQuickSort(biggerArray);
+			System.arraycopy(smallerArray,0,value,0,smallerArray.length);
+			value[smallerArray.length] = pivot;
+			System.arraycopy(biggerArray,0,value,smallerArray.length+1,biggerArray.length);
+
+		}
+
+		return value;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	private static int[] DoRadixSort(int[] value)
 	{
 		// TODO : Radix Sort 를 구현하라.
+		int maxAbs = value[0];
+		for(int i=1; i<value.length; i++) {
+			if(Math.abs(value[i])>maxAbs) maxAbs = Math.abs(value[i]);
+		}
+		int d = (int)Math.floor(Math.log10(maxAbs))+1;
+		// 최대 자리수를 찾는 과정 빅세타(n)
+
+		for(int i=0; i<d; i++) {
+			Queue<Integer>[] queueArray = new Queue[19];
+			for(int j=0; j<value.length; j++) {
+				int number = (value[j]/((int)Math.pow(10,d-1-i)))%10 + 9;
+				queueArray[number].add(value[i]);
+			}
+			int count=0;
+			for(int k=0; k<queueArray.length; k++) {
+				while(queueArray[k].peek()!=null) {
+					value[count++] = queueArray[k].poll();
+				}
+			}
+		}
+
 		return (value);
 	}
 }
