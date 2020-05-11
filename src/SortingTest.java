@@ -141,6 +141,54 @@ public class SortingTest
 	private static int[] DoHeapSort(int[] value)
 	{
 		// TODO : Heap Sort 를 구현하라.
+		// building heap
+		for(int i=value.length/2; i>=1; i--) {
+			int child = 2*i;
+			int rightChild = 2*i+1;
+			while(child<=value.length) {
+				if(rightChild<=value.length && value[child-1]<value[rightChild-1]) {
+					child = rightChild; // child에 bigger value index
+				}
+				if(value[i-1]<value[child-1]) {
+					int tmp = value[i-1];
+					value[i-1] = value[child-1];
+					value[child-1] = tmp;
+					i = child;
+					child = 2*child;
+					rightChild = child+1;
+				} else {
+					break;
+				}
+			}
+		}
+		// sorting
+		for(int i=value.length; i>=2; i--) {
+			int tmp = value[0];
+			value[0] = value[i-1];
+			value[i-1] = tmp;
+
+			int j=1;
+			int child = 2*j;
+			int rightChild = 2*j+1;
+			while(child<=i-1) {
+				if(rightChild<=i-1 && value[child-1]<value[rightChild-1]) {
+					child = rightChild;
+				}
+				if(value[j-1]<value[child-1]) {
+					int tmp2 = value[j-1];
+					value[j-1] = value[child-1];
+					value[child-1] = tmp2;
+					j = child;
+					child = 2*child;
+					rightChild = child+1;
+				} else {
+					break;
+				}
+
+			}
+		}
+
+
 		return (value);
 	}
 
