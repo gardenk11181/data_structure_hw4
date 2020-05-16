@@ -1,8 +1,9 @@
-import javax.sound.sampled.EnumControl;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Random;
 
-public class SortingTest
+public class SortingTest2
 {
 	public static void main(String args[])
 	{
@@ -10,84 +11,35 @@ public class SortingTest
 
 		try
 		{
-			boolean isRandom = false;	// 입력받은 배열이 난수인가 아닌가?
 			int[] value;	// 입력 받을 숫자들의 배열
 			String nums = br.readLine();	// 첫 줄을 입력 받음
-			if (nums.charAt(0) == 'r')
-			{
-				// 난수일 경우
-				isRandom = true;	// 난수임을 표시
 
-				String[] nums_arg = nums.split(" ");
+			String[] nums_arg = nums.split(" ");
 
-				int numsize = Integer.parseInt(nums_arg[1]);	// 총 갯수
-				int rminimum = Integer.parseInt(nums_arg[2]);	// 최소값
-				int rmaximum = Integer.parseInt(nums_arg[3]);	// 최대값
+			int numsize = Integer.parseInt(nums_arg[0]);	// 총 갯수
+			int rminimum = Integer.parseInt(nums_arg[1]);	// 최소값
+			int rmaximum = Integer.parseInt(nums_arg[2]);	// 최대값
 
+
+			for(int k=0; k<100; k++) { //100번 반
 				Random rand = new Random();	// 난수 인스턴스를 생성한다.
 
 				value = new int[numsize];	// 배열을 생성한다.
 				for (int i = 0; i < value.length; i++)	// 각각의 배열에 난수를 생성하여 대입
 					value[i] = rand.nextInt(rmaximum - rminimum + 1) + rminimum;
-			}
-			else
-			{
-				// 난수가 아닐 경우
-				int numsize = Integer.parseInt(nums);
 
-				value = new int[numsize];	// 배열을 생성한다.
-				for (int i = 0; i < value.length; i++)	// 한줄씩 입력받아 배열원소로 대입
-					value[i] = Integer.parseInt(br.readLine());
-			}
 
-			// 숫자 입력을 다 받았으므로 정렬 방법을 받아 그에 맞는 정렬을 수행한다.
-			while (true)
-			{
+				// 숫자 입력을 다 받았으므로 정렬 방법을 받아 그에 맞는 정렬을 수행한다.
+
 				int[] newvalue = (int[])value.clone();	// 원래 값의 보호를 위해 복사본을 생성한다.
 
-				String command = br.readLine();
-
 				long t = System.currentTimeMillis();
-				switch (command.charAt(0))
-				{
-					case 'B':	// Bubble Sort
-						newvalue = DoBubbleSort(newvalue);
-						break;
-					case 'I':	// Insertion Sort
-						newvalue = DoInsertionSort(newvalue);
-						break;
-					case 'H':	// Heap Sort
-						newvalue = DoHeapSort(newvalue);
-						break;
-					case 'M':	// Merge Sort
-						newvalue = DoMergeSort(newvalue);
-						break;
-					case 'Q':	// Quick Sort
-						newvalue = DoQuickSort(newvalue);
-						break;
-					case 'R':	// Radix Sort
-						newvalue = DoRadixSort(newvalue);
-						break;
-					case 'X':
-						return;	// 프로그램을 종료한다.
-					default:
-						throw new IOException("잘못된 정렬 방법을 입력했습니다.");
-				}
-				if (isRandom)
-				{
-					// 난수일 경우 수행시간을 출력한다.
-					System.out.println((System.currentTimeMillis() - t) + " ms");
-				}
-				else
-				{
-					// 난수가 아닐 경우 정렬된 결과값을 출력한다.
-					for (int i = 0; i < newvalue.length; i++)
-					{
-						System.out.println(newvalue[i]);
-					}
-				}
+				newvalue = DoQuickSort(newvalue);
 
+				//수행시간을 출력한다.
+				System.out.println((System.currentTimeMillis() - t));
 			}
+
 		}
 		catch (IOException e)
 		{
@@ -126,7 +78,6 @@ public class SortingTest
 			int tmp = value[i];
 			int lastJ = i;
 			for(int j=i-1; j>=0; j--) {
-				// 들어갈 자리 탐
 				if(value[j]>tmp) {
 					value[j+1] = value[j];
 					lastJ = j;
@@ -182,18 +133,16 @@ public class SortingTest
 		int[] tempArray = new int[value.length];
 
 		if(value.length>1) {
-			// 배열을 둘로 나눔.
 			int[] firstArray = new int[value.length/2];
 			int[] secondArray = new int[value.length - value.length/2];
 			System.arraycopy(value,0,firstArray,0,value.length/2);
 			System.arraycopy(value,value.length/2,secondArray,0,value.length - value.length/2);
 
-			// 각각 재귀적 반복
 			firstArray = DoMergeSort(firstArray);
 			secondArray = DoMergeSort(secondArray);
 
 			int i=0, j=0,k=0;
-			while(true) { // merge
+			while(true) {
 				if(i==firstArray.length) {
 					if(j==secondArray.length) break;
 					tempArray[k++] = secondArray[j++];
@@ -232,7 +181,6 @@ public class SortingTest
 			int[] biggerArray = new int[value.length-pivotIndex-1];
 			System.arraycopy(value,0,smallerArray,0,pivotIndex);
 			System.arraycopy(value,pivotIndex,biggerArray,0,value.length-pivotIndex-1);
-			// 나눈 부분배열에 대해 재귀적 반복
 			smallerArray = DoQuickSort(smallerArray);
 			biggerArray = DoQuickSort(biggerArray);
 			System.arraycopy(smallerArray,0,value,0,smallerArray.length);
@@ -254,7 +202,7 @@ public class SortingTest
 		}
 		int d = (int)Math.floor(Math.log10(maxAbs))+1;
 		// 최대 자리수를 찾는 과정 빅세타(n)
-		// 2D int array 로 stable sort 구현
+		// 2D int array
 		for(int i=0; i<d; i++) {
 			int[][] numbers = new int[19][value.length+1];
 			for(int j=0; j<value.length; j++) {
